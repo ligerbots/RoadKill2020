@@ -8,6 +8,10 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveTrain;
+
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -15,17 +19,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  */
 public class DriveCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final DriveTrain m_subsystem;
+  private final DriveTrain robotDrive;
+  private final DoubleSupplier throttle;
+  private final DoubleSupplier turn;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCommand(DriveTrain subsystem) {
-    m_subsystem = subsystem;
+  public DriveCommand(DriveTrain driveTrain, DoubleSupplier throttle, DoubleSupplier turn) {    robotDrive = driveTrain;
+    this.throttle = throttle;
+    this.turn = turn;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -36,6 +42,11 @@ public class DriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //robotDrive.go();
+    SmartDashboard.putNumber("Left Encoder Distance", robotDrive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Distance", robotDrive.getRightEncoderDistance());
+    SmartDashboard.putNumber("Heading", robotDrive.getHeading());
+    robotDrive.arcadeDrive(throttle.getAsDouble(), turn.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

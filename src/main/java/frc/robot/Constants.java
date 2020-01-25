@@ -22,36 +22,43 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 public final class Constants {
 
     //TALON IDs
-    public static final int MIDDLE_LEFT_TALON_ID = 1;
+    public static final int LEADER_LEFT_TALON_ID = 1;
 
-    public static final int MIDDLE_RIGHT_TALON_ID = 2;
+    public static final int LEADER_RIGHT_TALON_ID = 3;
 
-    public static final int BACK_LEFT_TALON_ID = 3;
+    public static final int FOLLOWER_LEFT_TALON_ID = 6;
 
-    public static final int BACK_RIGHT_TALON_ID = 4;
+    public static final int FOLLOWER_RIGHT_TALON_ID = 4;
+
+    //ENCODER VALUES
+    public static final int[] LEFT_ENCODER_PORTS = new int[]{6, 7}; //TODO: THESE ARE STAND INS
+
+    public static final int[] RIGHT_ENCODER_PORTS = new int[]{8, 9}; //TODO: THESE ARE STAND INS
+
+    public static final double DISTANCE_PER_PULSE = 0.00187022937;
 
     //FEEDFORWARD AND FEEDBACK GAINS
-    public static final double ksVolts = 0.22;
+    public static final double ksVolts = 1.11; 
 
-    public static final double kvVoltSecondsPerMeter = 1.98;
+    public static final double kvVoltSecondsPerMeter = 3.0; 
 
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.368; 
 
-    public static final double kPDriveVel = 8.5;
+    public static final double kPDriveVel = 13.3; 
 
     //DIFFERENTIAL DRIVE KINEMATICS
-    public static final double kTrackwidth = 0.69; // meters
+    public static final double kTrackwidth = 0.55245; // in meters
 
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidth);
 
     //MAX TRAJECTORY VELOCITY AND ACCELERATION
-    public static final double kMaxSpeed = 3; // meters per second
+    public static final double kMaxSpeed = 1.5; // TODO: ASSIGN A REAL VALUE meters per second
 
-    public static final double kMaxAcceleration = 3; // meters per second per second
+    public static final double kMaxAcceleration = 0.5; // TODO: ASSIGN A REAL VALUE meters per second per second
 
     //RAMSETE PARAMETERS
     public static final double kRamseteB = 2; // generic ramsete values
-    
+
     public static final double kRamseteZeta = 0.7; // generic ramsete values
 
 
