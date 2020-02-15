@@ -28,7 +28,8 @@ public class DriveCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCommand(DriveTrain driveTrain, DoubleSupplier throttle, DoubleSupplier turn) {    robotDrive = driveTrain;
+  public DriveCommand(DriveTrain driveTrain, DoubleSupplier throttle, DoubleSupplier turn) {    
+    robotDrive = driveTrain;
     this.throttle = throttle;
     this.turn = turn;
     // Use addRequirements() here to declare subsystem dependencies.
