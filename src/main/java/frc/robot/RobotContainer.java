@@ -30,6 +30,8 @@ import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.Servo;
+
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -44,6 +46,7 @@ public class RobotContainer {
   private final Turn turn = new Turn();
   public final DriveCommand driveCommand = new DriveCommand(robotDrive, throttle, turn);
   XboxController xbox = new XboxController(0);
+  public final Servo pinServo = new Servo(5);
 
 
 
