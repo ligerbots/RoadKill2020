@@ -62,5 +62,4 @@ public final class Constants {
     public static final double kRamseteZeta = 0.7; // generic ramsete values
 
 
-
 }

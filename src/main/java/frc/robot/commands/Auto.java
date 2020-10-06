@@ -55,28 +55,18 @@ public class Auto extends SequentialCommandGroup {
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)), 
         List.of(
-            new Translation2d(2, 0.5),
-            new Translation2d(4, -0.5)
+            new Translation2d(0, 0.5),
+            new Translation2d(0, -0.5)
         ),
         new Pose2d(6, 0, new Rotation2d(0)),
         configForward
     ); 
-    Trajectory trajectoryTurn = TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)), 
-      List.of(
-          new Translation2d(3, 0),
-          new Translation2d(-1, 0)
-      ),
-      new Pose2d(0, 0, new Rotation2d(0)),
-      configForward
-  ); 
 
     Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(6, 0, new Rotation2d(0)), 
+        //new Pose2d(6, 0, new Rotation2d(0)), 
         List.of(),
-        new Pose2d(0, 0, new Rotation2d(0)),
+        //new Pose2d(0, 0, new Rotation2d(0)),
         configBackward
     ); 
 
@@ -109,24 +99,11 @@ public class Auto extends SequentialCommandGroup {
         robotDrive::tankDriveVolts,
         robotDrive
     );
-    RamseteCommand ramseteCommand3 = new RamseteCommand(
-      trajectoryTurn,
-      robotDrive::getPose,
-      new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-      new SimpleMotorFeedforward(Constants.ksVolts,
-                                 Constants.kvVoltSecondsPerMeter,
-                                 Constants.kaVoltSecondsSquaredPerMeter),
-      Constants.kDriveKinematics,
-      robotDrive::getWheelSpeeds,
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      robotDrive::tankDriveVolts,
-      robotDrive
-  );
+
     
 
     addCommands(
-      ramseteCommand1, ramseteCommand2, ramseteCommand3.andThen(() -> robotDrive.tankDriveVolts(0, 0))
+      ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
     );
     // Add Commands here:
     // e.g. addSequential(new Command1());

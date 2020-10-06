@@ -46,8 +46,6 @@ public class RobotContainer {
   private final Turn turn = new Turn();
   public final DriveCommand driveCommand = new DriveCommand(robotDrive, throttle, turn);
   XboxController xbox = new XboxController(0);
-  public final Servo pinServo = new Servo(5);
-
 
 
   /**
@@ -94,6 +92,10 @@ public class RobotContainer {
   Auto auto = new Auto(robotDrive);
   public Command getAutonomousCommand() {
     return auto;
+  }
+}
+
+
     /*robotDrive.resetOdometry(new Pose2d());
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
@@ -137,5 +139,3 @@ public class RobotContainer {
     );
 
     return ramseteCommand.andThen(() -> robotDrive.tankDriveVolts(0, 0));*/
-  }
-}

@@ -39,7 +39,7 @@ public class EncoderWrapper {
 
     public void update() {
         oldTime = time;
-        time = (double)System.nanoTime() / 1_000_000_000.0;
+        time = (double)System.nanoTime() / 1_000_000_000.0;// this gives time in seconds
         oldTicks = currentTicks;
         currentTicks = getRawDistance();
     }
