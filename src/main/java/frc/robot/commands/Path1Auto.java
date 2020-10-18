@@ -45,31 +45,31 @@ public class Path1Auto extends SequentialCommandGroup {
             .setKinematics(Constants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
         
-    /* TrajectoryConfig configBackward =
+    TrajectoryConfig configBackward =
         new TrajectoryConfig(Constants.kMaxSpeed,
                              Constants.kMaxAcceleration)
             .setKinematics(Constants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
-            .setReversed(true); */
+            .setReversed(true);
 
     Trajectory trajectoryForward = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)), 
+        new Pose2d(0.0, 0.0, new Rotation2d(0.0)), 
         List.of(
-            new Translation2d(0.5, 0.),
-            new Translation2d(-0.5, 0)
+            new Translation2d(2.0, 1.0),
+            new Translation2d(4.0, -1.0)
         ),
-        new Pose2d(6, 0, new Rotation2d(0)),
+        new Pose2d(6.0, 0.0, new Rotation2d(0.0)),
         configForward
     ); 
 
-    /* Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
+    Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        //new Pose2d(6, 0, new Rotation2d(0)), 
+        new Pose2d(6, 0, new Rotation2d(0)), 
         List.of(),
-        //new Pose2d(0, 0, new Rotation2d(0)),
+        new Pose2d(0, 0, new Rotation2d(0)),
         configBackward
-    );  */
+    );
 
     RamseteCommand ramseteCommand1 = new RamseteCommand(
         trajectoryForward,
@@ -86,7 +86,7 @@ public class Path1Auto extends SequentialCommandGroup {
         robotDrive
     );
 
-    /* RamseteCommand ramseteCommand2 = new RamseteCommand(
+    RamseteCommand ramseteCommand2 = new RamseteCommand(
         trajectoryBack,
         robotDrive::getPose,
         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
@@ -99,14 +99,14 @@ public class Path1Auto extends SequentialCommandGroup {
         new PIDController(Constants.kPDriveVel, 0, 0),
         robotDrive::tankDriveVolts,
         robotDrive
-    ); */
-
-    //addCommands(
-    //  ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
-    //);
-    addCommands(
-      ramseteCommand1.andThen(() -> robotDrive.tankDriveVolts(0, 0))
     );
+
+    addCommands(
+     ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
+    );
+    // addCommands(
+    //   ramseteCommand1.andThen(() -> robotDrive.tankDriveVolts(0, 0))
+    // );
 
     // Add Commands here:
     // e.g. addSequential(new Command1());
