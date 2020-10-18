@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
 
-public class Auto extends SequentialCommandGroup {
+public class Path1Auto extends SequentialCommandGroup {
   /**
    * Add your docs here.
    */
-  public Auto(DriveTrain robotDrive) {
+  public Path1Auto(DriveTrain robotDrive) {
     // hello world
     robotDrive.resetOdometry(new Pose2d());
     var autoVoltageConstraint =
@@ -45,12 +45,12 @@ public class Auto extends SequentialCommandGroup {
             .setKinematics(Constants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
         
-    TrajectoryConfig configBackward =
+    /* TrajectoryConfig configBackward =
         new TrajectoryConfig(Constants.kMaxSpeed,
                              Constants.kMaxAcceleration)
             .setKinematics(Constants.kDriveKinematics)
             .addConstraint(autoVoltageConstraint)
-            .setReversed(true);
+            .setReversed(true); */
 
     Trajectory trajectoryForward = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
@@ -63,13 +63,13 @@ public class Auto extends SequentialCommandGroup {
         configForward
     ); 
 
-    Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
+    /* Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         //new Pose2d(6, 0, new Rotation2d(0)), 
         List.of(),
         //new Pose2d(0, 0, new Rotation2d(0)),
         configBackward
-    ); 
+    );  */
 
     RamseteCommand ramseteCommand1 = new RamseteCommand(
         trajectoryForward,
@@ -86,7 +86,7 @@ public class Auto extends SequentialCommandGroup {
         robotDrive
     );
 
-    RamseteCommand ramseteCommand2 = new RamseteCommand(
+    /* RamseteCommand ramseteCommand2 = new RamseteCommand(
         trajectoryBack,
         robotDrive::getPose,
         new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
@@ -99,11 +99,15 @@ public class Auto extends SequentialCommandGroup {
         new PIDController(Constants.kPDriveVel, 0, 0),
         robotDrive::tankDriveVolts,
         robotDrive
+    ); */
+
+    //addCommands(
+    //  ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
+    //);
+    addCommands(
+      ramseteCommand1.andThen(() -> robotDrive.tankDriveVolts(0, 0))
     );
 
-    addCommands(
-      ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
-    );
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());

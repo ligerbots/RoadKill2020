@@ -32,7 +32,6 @@ public class DriveCommand extends CommandBase {
     robotDrive = driveTrain;
     this.throttle = throttle;
     this.turn = turn;
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -43,10 +42,10 @@ public class DriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //robotDrive.go();
     SmartDashboard.putNumber("Left Encoder Distance", robotDrive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", robotDrive.getRightEncoderDistance());
     SmartDashboard.putNumber("Heading", robotDrive.getHeading());
+
     robotDrive.arcadeDrive(throttle.getAsDouble(), turn.getAsDouble());
   }
 
