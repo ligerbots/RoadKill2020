@@ -23,9 +23,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // simulation classes
@@ -71,6 +73,10 @@ public class DriveTrain extends SubsystemBase
   private SimDouble gyroAngleSim;
   private Gyro gyro = null;
 
+  Rotation2d initAngle = new Rotation2d(Math.toRadians(0));
+  Translation2d initPosition = new Translation2d(Units.feetToMeters(10), Units.feetToMeters(20));
+  Pose2d initPose = new Pose2d(initPosition, initAngle);
+
   public DriveTrain() {
 
     // leftLeader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
@@ -89,8 +95,8 @@ public class DriveTrain extends SubsystemBase
     } else {
       navx = new AHRS(SPI.Port.kMXP, (byte) 200);
     }
-    
-    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0), initPose);
     
     Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
         .forEach((WPI_TalonSRX talon) -> talon.setNeutralMode(NeutralMode.Brake));

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
@@ -28,9 +29,16 @@ public class Path1Auto extends SequentialCommandGroup {
   /**
    * Add your docs here.
    */
+
+    // Pose2d[] poses = new Pose2d[5];
+    // poses[1] = 
+  Rotation2d initAngle = new Rotation2d(Math.toRadians(0));
+  Translation2d initPosition = new Translation2d(Units.feetToMeters(10), Units.feetToMeters(20));
+  Pose2d initPose = new Pose2d(initPosition, initAngle);
+
   public Path1Auto(DriveTrain robotDrive) {
     // hello world
-    robotDrive.resetOdometry(new Pose2d());
+    robotDrive.resetOdometry(initPose);
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.ksVolts,
@@ -54,20 +62,20 @@ public class Path1Auto extends SequentialCommandGroup {
 
     Trajectory trajectoryForward = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0.0, 0.0, new Rotation2d(0.0)), 
+        new Pose2d(initPosition,initAngle), 
         List.of(
-            new Translation2d(2.0, 1.0),
-            new Translation2d(4.0, -1.0)
+            new Translation2d(initPosition.getX()+Units.feetToMeters(2.0), initPosition.getY()+Units.feetToMeters(1.0)),
+            new Translation2d(initPosition.getX()+Units.feetToMeters(4.0), initPosition.getY()+Units.feetToMeters(-1.0))
         ),
-        new Pose2d(6.0, 0.0, new Rotation2d(0.0)),
+        new Pose2d(initPosition.getX()+Units.feetToMeters(6.0), initPosition.getY(), new Rotation2d(0.0)),
         configForward
     ); 
 
     Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(6, 0, new Rotation2d(0)), 
+        new Pose2d(initPosition.getX()+Units.feetToMeters(6.0), initPosition.getY(), new Rotation2d(0.0)), 
         List.of(),
-        new Pose2d(0, 0, new Rotation2d(0)),
+        new Pose2d(initPosition,initAngle),
         configBackward
     );
 
