@@ -35,21 +35,25 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.Field2d;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import frc.robot.DummySpeedController;
 
 import frc.robot.Constants;
+
+
 //import frc.robot.EncoderWrapper;
 
 //@SuppressWarnings("all")
+
+
 public class DriveTrain extends SubsystemBase
 {
-  WPI_TalonSRX leftLeader = new WPI_TalonSRX(Constants.LEADER_LEFT_TALON_ID);
-  WPI_TalonSRX rightLeader = new WPI_TalonSRX(Constants.LEADER_RIGHT_TALON_ID);
-  WPI_TalonSRX leftFollower = new WPI_TalonSRX(Constants.FOLLOWER_LEFT_TALON_ID);
-  WPI_TalonSRX rightFollower = new WPI_TalonSRX(Constants.FOLLOWER_RIGHT_TALON_ID);
+  WPI_TalonSRX leftLeader;
+  WPI_TalonSRX rightLeader;
+  WPI_TalonSRX leftFollower;
+  WPI_TalonSRX rightFollower; 
 
-  private final SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftLeader, leftFollower);
-
-  private final SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightLeader, rightFollower);
+  private final SpeedControllerGroup leftMotors;
+  private final SpeedControllerGroup rightMotors;
 
   DifferentialDrive robotDrive;
 
@@ -72,7 +76,23 @@ public class DriveTrain extends SubsystemBase
   private Gyro gyro = null;
 
   public DriveTrain() {
+    if(RobotBase.isReal()){
+      leftLeader = new WPI_TalonSRX(Constants.LEADER_LEFT_TALON_ID);
+      rightLeader = new WPI_TalonSRX(Constants.LEADER_RIGHT_TALON_ID);
+      leftFollower = new WPI_TalonSRX(Constants.FOLLOWER_LEFT_TALON_ID);
+      rightFollower = new WPI_TalonSRX(Constants.FOLLOWER_RIGHT_TALON_ID);
 
+      leftMotors=new SpeedControllerGroup(leftLeader, leftFollower);
+      rightMotors=new SpeedControllerGroup(rightLeader, rightFollower);
+    }else{
+      leftLeader=null;
+      rightLeader=null;
+      leftFollower=null;
+      rightFollower=null;
+
+      leftMotors=new SpeedControllerGroup(new DummySpeedController());
+      rightMotors=new SpeedControllerGroup(new DummySpeedController());
+    }
     // leftLeader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
     // rightLeader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
     // rightLeader.setSensorPhase(true);
@@ -92,8 +112,10 @@ public class DriveTrain extends SubsystemBase
     
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
     
-    Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
-        .forEach((WPI_TalonSRX talon) -> talon.setNeutralMode(NeutralMode.Brake));
+    if (RobotBase.isReal()) {
+      Arrays.asList(leftLeader, rightLeader, leftFollower, rightFollower)
+         .forEach((WPI_TalonSRX talon) -> talon.setNeutralMode(NeutralMode.Brake));
+    }
 
     if (RobotBase.isSimulation()) {
       // If our robot is simulated
