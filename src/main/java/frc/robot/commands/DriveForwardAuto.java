@@ -16,11 +16,12 @@ public class DriveForwardAuto extends CommandBase {
    */
   DriveTrain robotDrive;
   long startTime;
-  DriveCommand driveCommand;
+  //DriveCommand driveCommand;
 
-  public DriveForwardAuto(DriveTrain robotDrive, DriveCommand driveCommand) {
+  public DriveForwardAuto(DriveTrain robotDrive) {
     this.robotDrive = robotDrive;
-    this.driveCommand = driveCommand;
+    //this.driveCommand = driveCommand;
+    addRequirements(robotDrive);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -28,7 +29,7 @@ public class DriveForwardAuto extends CommandBase {
   @Override
   public void initialize() {
     startTime = System.nanoTime();
-    driveCommand.cancel();
+    //driveCommand.cancel();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,7 +42,7 @@ public class DriveForwardAuto extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     robotDrive.arcadeDrive(0, 0);
-    driveCommand.schedule();
+    //driveCommand.schedule();
   }
 
   // Returns true when the command should end.

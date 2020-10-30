@@ -37,9 +37,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 import frc.robot.Constants;
-//import frc.robot.EncoderWrapper;
 
-//@SuppressWarnings("all")
 public class DriveTrain extends SubsystemBase
 {
   WPI_TalonSRX leftLeader = new WPI_TalonSRX(Constants.LEADER_LEFT_TALON_ID);
@@ -121,6 +119,21 @@ public class DriveTrain extends SubsystemBase
     return odometry.getPoseMeters();
   }
 
+  public double getHeading() {
+    return odometry.getPoseMeters().getRotation().getDegrees();
+  }
+
+  public void setPose(Pose2d pose) {
+    // The left and right encoders MUST be reset when odometry is reset
+    leftEncoder.reset();
+    rightEncoder.reset();
+    odometry.resetPosition(pose, Rotation2d.fromDegrees(getGyroAngle()));
+
+    if (RobotBase.isSimulation()) {
+      fieldSim.setRobotPose(pose);
+    }
+  }
+  
   public void arcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("Drive Cmd Throttle", speed);
     SmartDashboard.putNumber("Drive Cmd Turn", rotation);
@@ -130,12 +143,8 @@ public class DriveTrain extends SubsystemBase
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     leftMotors.setVoltage(leftVolts);
-    rightMotors.setVoltage(-rightVolts);// make sure right is negative becuase sides are opposite
+    rightMotors.setVoltage(-rightVolts); // make sure right is negative because sides are opposite
     robotDrive.feed();
-  }
-
-  public double getAverageEncoderDistance() {
-    return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2.0;
   }
 
   public double getLeftEncoderDistance() {
@@ -146,34 +155,18 @@ public class DriveTrain extends SubsystemBase
     return rightEncoder.getDistance();
   }
 
-  public double getHeading() {   
+  // private: not needed outside this class. Use the Pose angle for the robot heading
+  private double getGyroAngle() {   
+    // Note gyro angle goes opposite to the field angle, thus the minus sign
     if (navx != null) {
-      return Math.IEEEremainder(navx.getAngle(), 360) * -1.0; // -1 here for unknown reason look in documatation
+      return -Math.IEEEremainder(navx.getAngle(), 360.0);
     } else {
-      return Math.IEEEremainder(gyro.getAngle(), 360) * -1.0;
+      return -Math.IEEEremainder(gyro.getAngle(), 360.0);
     }
   }
 
-  public void resetHeading() {
-    if (navx != null) {
-      navx.reset();
-    } else {
-      gyro.reset();
-    }
-  }
-
-  public void resetEncoders () {
-    leftEncoder.reset();
-    rightEncoder.reset();
-  }
-
-  public void resetOdometry (Pose2d pose) {
-    resetEncoders();
-    resetHeading();
-    odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
-  }
-
-  public DifferentialDriveWheelSpeeds getWheelSpeeds () {
+  // this is used in the Ramsete controllers
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
   }
 
@@ -181,9 +174,8 @@ public class DriveTrain extends SubsystemBase
   public void periodic() {
     // This method will be called once per scheduler run
 
-    odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(), rightEncoder.getDistance());
+    odometry.update(Rotation2d.fromDegrees(getGyroAngle()), leftEncoder.getDistance(), rightEncoder.getDistance());
     SmartDashboard.putNumber("Heading", getHeading());
-    SmartDashboard.putString("Pose", getPose().toString());
   }
 
   @Override

@@ -18,6 +18,7 @@ public class go extends CommandBase {
   public go(DriveTrain robotDrive) {
     this.robotDrive = robotDrive;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(robotDrive);
   }
 
   // Called when the command is initially scheduled.

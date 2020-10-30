@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.DriveTrain;
@@ -26,23 +30,35 @@ import frc.robot.subsystems.DriveTrain;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  
   // The robot's subsystems and commands are defined here...
   public final DriveTrain robotDrive = new DriveTrain();
+  
   private final Throttle throttle = new Throttle();
   private final Turn turn = new Turn();
-  public final DriveCommand driveCommand = new DriveCommand(robotDrive, throttle, turn);
+  private final DriveCommand driveCommand = new DriveCommand(robotDrive, throttle, turn);
   XboxController xbox = new XboxController(0);
-
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    robotDrive.setDefaultCommand(driveCommand);
+
+    // Configure the initial Pose (field position, angle) of the robot
+    //  and tell the DriveTrain where it is.
+    // In a competition robot, this might be determined by a Chooser
+    Rotation2d initialAngle = new Rotation2d(Math.toRadians(30));  // facing straight forward
+    Translation2d initialPosition = new Translation2d(Units.feetToMeters(10), Units.feetToMeters(20));
+    Pose2d initialPose = new Pose2d(initialPosition, initialAngle);
+  
+    robotDrive.setPose(initialPose);
   }
 
   public class Throttle implements DoubleSupplier {
-
     @Override
     public double getAsDouble() {
       return -xbox.getY(Hand.kLeft);
@@ -50,7 +66,6 @@ public class RobotContainer {
   }
 
   public class Turn implements DoubleSupplier {
-
     @Override
     public double getAsDouble() {
       return xbox.getX(Hand.kRight);
@@ -76,7 +91,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand()
   {
-  //return new DriveForwardAuto(robotDrive, driveCommand);
-    return new Path1Auto(robotDrive);
+    //return new Path1Auto(robotDrive);
+    return new DriveForwardAuto(robotDrive);
   }
 }

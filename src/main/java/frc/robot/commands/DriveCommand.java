@@ -32,6 +32,7 @@ public class DriveCommand extends CommandBase {
     robotDrive = driveTrain;
     this.throttle = throttle;
     this.turn = turn;
+    addRequirements(robotDrive);
   }
 
   // Called when the command is initially scheduled.

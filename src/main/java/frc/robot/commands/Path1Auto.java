@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -29,8 +30,8 @@ public class Path1Auto extends SequentialCommandGroup {
    * Add your docs here.
    */
   public Path1Auto(DriveTrain robotDrive) {
-    // hello world
-    robotDrive.resetOdometry(new Pose2d());
+    addRequirements(robotDrive);
+    
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.ksVolts,
@@ -42,35 +43,38 @@ public class Path1Auto extends SequentialCommandGroup {
     TrajectoryConfig configForward =
         new TrajectoryConfig(Constants.kMaxSpeed,
                              Constants.kMaxAcceleration)
-            .setKinematics(Constants.kDriveKinematics)
-            .addConstraint(autoVoltageConstraint);
+        .setKinematics(Constants.kDriveKinematics)
+        .addConstraint(autoVoltageConstraint);
         
     TrajectoryConfig configBackward =
         new TrajectoryConfig(Constants.kMaxSpeed,
                              Constants.kMaxAcceleration)
-            .setKinematics(Constants.kDriveKinematics)
-            .addConstraint(autoVoltageConstraint)
-            .setReversed(true);
+        .setKinematics(Constants.kDriveKinematics)
+        .addConstraint(autoVoltageConstraint)
+        .setReversed(true);
 
+    //Transform2d offset = robotDrive.getPose().minus(new Pose2d());
+    Transform2d offset = new Transform2d(robotDrive.getPose().getTranslation(), Rotation2d.fromDegrees(0));
+    
     Trajectory trajectoryForward = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
-        new Pose2d(0.0, 0.0, new Rotation2d(0.0)), 
+        new Pose2d(0.0, 0.0, new Rotation2d(0.0)),
         List.of(
             new Translation2d(2.0, 1.0),
             new Translation2d(4.0, -1.0)
-        ),
+                ),
         new Pose2d(6.0, 0.0, new Rotation2d(0.0)),
-        configForward
-    ); 
+        configForward);
+    trajectoryForward = trajectoryForward.transformBy(offset); 
 
     Trajectory trajectoryBack = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(6, 0, new Rotation2d(0)), 
         List.of(),
         new Pose2d(0, 0, new Rotation2d(0)),
-        configBackward
-    );
-
+        configBackward);
+    trajectoryBack = trajectoryBack.transformBy(offset);
+    
     RamseteCommand ramseteCommand1 = new RamseteCommand(
         trajectoryForward,
         robotDrive::getPose,
@@ -84,7 +88,7 @@ public class Path1Auto extends SequentialCommandGroup {
         new PIDController(Constants.kPDriveVel, 0, 0),
         robotDrive::tankDriveVolts,
         robotDrive
-    );
+                                                        );
 
     RamseteCommand ramseteCommand2 = new RamseteCommand(
         trajectoryBack,
@@ -99,11 +103,11 @@ public class Path1Auto extends SequentialCommandGroup {
         new PIDController(Constants.kPDriveVel, 0, 0),
         robotDrive::tankDriveVolts,
         robotDrive
-    );
+                                                        );
 
     addCommands(
-     ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
-    );
+        ramseteCommand1, ramseteCommand2.andThen(() -> robotDrive.tankDriveVolts(0, 0))
+                );
     // addCommands(
     //   ramseteCommand1.andThen(() -> robotDrive.tankDriveVolts(0, 0))
     // );

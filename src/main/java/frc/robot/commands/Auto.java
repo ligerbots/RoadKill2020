@@ -29,8 +29,7 @@ public class Auto extends SequentialCommandGroup {
    * Add your docs here.
    */
   public Auto(DriveTrain robotDrive) {
-    // hello world
-    robotDrive.resetOdometry(new Pose2d());
+    
     var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.ksVolts,
