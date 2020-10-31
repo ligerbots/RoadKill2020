@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.hal.SimDouble;
 
@@ -33,10 +32,9 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.Field2d;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 import frc.robot.Constants;
+import frc.robot.simulation.AHRSSimWrapper;
 
 public class DriveTrain extends SubsystemBase
 {
@@ -51,7 +49,7 @@ public class DriveTrain extends SubsystemBase
 
   DifferentialDrive robotDrive;
 
-  AHRS navx = null;
+  AHRSSimWrapper navx = null;
 
   DifferentialDriveOdometry odometry;
 
@@ -66,8 +64,9 @@ public class DriveTrain extends SubsystemBase
   // instance!
   // Does this belong somewhere else??
   private Field2d fieldSim;
+  // This is needed set the value of the angle, since there is no 
+  //   equivalent method in the normal class
   private SimDouble gyroAngleSim;
-  private Gyro gyro = null;
 
   public DriveTrain() {
 
@@ -81,12 +80,7 @@ public class DriveTrain extends SubsystemBase
     leftEncoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
     rightEncoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
 
-    if (RobotBase.isSimulation()) {
-      // navX is not yet simulated, so use an different gyro
-      gyro = new ADXRS450_Gyro();
-    } else {
-      navx = new AHRS(SPI.Port.kMXP, (byte) 200);
-    }
+    navx = new AHRSSimWrapper(SPI.Port.kMXP, (byte) 200);
     
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
     
@@ -107,8 +101,9 @@ public class DriveTrain extends SubsystemBase
       leftEncoderSim = new EncoderSim(leftEncoder);
       rightEncoderSim = new EncoderSim(rightEncoder);
 
-      // string is the name. Does the value actually matter??
-      gyroAngleSim = new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]").getDouble("Angle");
+      // get the angle simulation variable
+      // SimDevice is found by name and index, like "name[index]"
+      gyroAngleSim = new SimDeviceSim("AHRS[" + SPI.Port.kMXP.value + "]").getDouble("Angle");
 
       // the Field2d class lets us visualize our robot in the simulation GUI.
       fieldSim = new Field2d();
@@ -158,11 +153,7 @@ public class DriveTrain extends SubsystemBase
   // private: not needed outside this class. Use the Pose angle for the robot heading
   private double getGyroAngle() {   
     // Note gyro angle goes opposite to the field angle, thus the minus sign
-    if (navx != null) {
-      return -Math.IEEEremainder(navx.getAngle(), 360.0);
-    } else {
-      return -Math.IEEEremainder(gyro.getAngle(), 360.0);
-    }
+    return -Math.IEEEremainder(navx.getAngle(), 360.0);
   }
 
   // this is used in the Ramsete controllers
